@@ -1,0 +1,607 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka+One&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: linear-gradient(135deg, #1a0030 0%, #2d0050 50%, #1a0030 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Nunito', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ---- PARTICLES BG ---- */
+.bg-particles { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.bp { position:absolute; border-radius:50%; animation: risep 5s infinite ease-in; opacity:0; }
+@keyframes risep {
+  0%   { opacity:0; transform:translateY(0) scale(0.5); }
+  30%  { opacity:0.9; }
+  100% { opacity:0; transform:translateY(-110vh) scale(1.4); }
+}
+
+/* ---- SCENE ---- */
+.scene {
+  perspective: 1000px;
+  width: 320px;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+  margin: 20px auto;
+}
+
+/* ---- ENVELOPE ---- */
+.envelope {
+  width: 320px;
+  height: 200px;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.env-body {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #9b00c8, #6a0099);
+  border-radius: 12px;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(180,0,255,0.5), 0 0 0 2px rgba(255,200,255,0.2);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.env-shine {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.env-star-deco {
+  font-size: 36px;
+  animation: spinStar 4s linear infinite;
+  margin-bottom: 6px;
+}
+@keyframes spinStar {
+  from { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.2); }
+  to   { transform: rotate(360deg) scale(1); }
+}
+
+.env-label {
+  font-family: 'Fredoka One', cursive;
+  font-size: 15px;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 2px;
+  text-align: center;
+}
+.env-tap {
+  font-size: 11px;
+  color: rgba(255,220,255,0.7);
+  margin-top: 8px;
+  letter-spacing: 1px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:0.5; transform:scale(1); }
+  50%      { opacity:1;   transform:scale(1.05); }
+}
+
+/* Flap superior */
+.env-flap {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 55%;
+  background: linear-gradient(160deg, #b500ff, #8800cc);
+  clip-path: polygon(0 0, 100% 0, 50% 78%);
+  transform-origin: top center;
+  transform: rotateX(0deg);
+  transition: transform 0.6s cubic-bezier(.4,2,.6,1);
+  z-index: 5;
+  border-radius: 12px 12px 0 0;
+}
+.env-flap::after {
+  content: '✦';
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  color: rgba(255,220,255,0.6);
+}
+
+/* Flap inferior izq / der */
+.env-corner {
+  position: absolute;
+  bottom: 0;
+  width: 51%;
+  height: 60%;
+  background: linear-gradient(135deg, #7a00aa, #5c0088);
+  z-index: 1;
+}
+.env-corner.left  { left:0;  clip-path: polygon(0 100%, 100% 0, 0 0); border-radius: 0 0 0 12px; }
+.env-corner.right { right:0; clip-path: polygon(0 0, 100% 0, 100% 100%); border-radius: 0 0 12px 0; }
+
+/* Decoración sobre */
+.env-ribbon {
+  position: absolute;
+  bottom: 12px;
+  display: flex; gap: 6px;
+  z-index: 6;
+}
+.env-heart { font-size: 16px; animation: heartbeat 1.2s ease-in-out infinite; }
+.env-heart:nth-child(2) { animation-delay:.2s; }
+.env-heart:nth-child(3) { animation-delay:.4s; }
+@keyframes heartbeat {
+  0%,100% { transform: scale(1); }
+  50%      { transform: scale(1.3); }
+}
+
+/* ---- TARJETA ---- */
+.card-wrap {
+  width: 320px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.8s cubic-bezier(.4,0,.2,1), margin-top 0.5s ease;
+  margin-top: 0;
+  position: relative;
+  z-index: 5;
+}
+.card-wrap.open {
+  max-height: 900px;
+  margin-top: 12px;
+}
+
+.card {
+  width: 320px;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(180,0,255,0.4), 0 4px 16px rgba(0,0,0,0.3);
+  transform: translateY(-20px) scale(0.95);
+  opacity: 0;
+  transition: transform 0.7s cubic-bezier(.34,1.56,.64,1) 0.3s,
+              opacity 0.5s ease 0.3s;
+}
+.card-wrap.open .card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Top colorido */
+.card-top {
+   background: 
+    linear-gradient(135deg, rgba(255,111,207,0.6) 0%, rgba(200,80,192,0.6) 40%, rgba(123,47,190,0.6) 100%),
+    url('./images/walpaper.png');
+  background-size: cover;
+  background-position: center;
+  padding: 22px 20px 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ct-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.sp {
+  position: absolute;
+  font-size: 14px;
+  animation: sparkle 3s ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes sparkle {
+  0%,100% { opacity:0; transform:scale(0.5) rotate(0deg); }
+  50%      { opacity:1; transform:scale(1.2) rotate(20deg); }
+}
+
+.photo-frame {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5c518, #ff6fcf, #c850c0);
+  padding: 4px;
+  margin: 0 auto 12px;
+  position: relative;
+  box-shadow: 0 0 20px rgba(245,197,24,0.6);
+  animation: glowFrame 2s ease-in-out infinite alternate;
+}
+@keyframes glowFrame {
+  from { box-shadow: 0 0 16px rgba(245,197,24,0.5); }
+  to   { box-shadow: 0 0 32px rgba(245,197,24,0.9), 0 0 50px rgba(200,80,192,0.4); }
+}
+
+.photo-inner {
+   width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-image: url('./images/foto.png');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.photo-placeholder {
+  font-size: 30px;
+  margin-bottom: 2px;
+}
+.photo-hint {
+  font-size: 9px;
+  color: #a060c0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding: 0 8px;
+  line-height: 1.2;
+}
+
+/* Badge "9" */
+.age-badge {
+  position: absolute;
+  bottom: 2px; right: 2px;
+  width: 32px; height: 32px;
+  background: #f5c518;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka One', cursive;
+  font-size: 14px;
+  color: #7b2fbe;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.card-name {
+  font-family: 'Fredoka One', cursive;
+  font-size: 38px;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(120,0,200,0.5), 0 0 30px rgba(255,255,255,0.3);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.card-subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 3px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Tags k-pop */
+.tags {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.tag {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+}
+
+/* Onda separadora */
+.wave-sep {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  margin-top: -1px;
+}
+.wave-sep svg { display:block; }
+
+/* Info section */
+.card-info {
+  background: #fff;
+  padding: 18px 20px 14px;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #fdf0ff, #fff0f8);
+  border-radius: 14px;
+  border-left: 4px solid #c850c0;
+  animation: bounceIn 0.5s ease both;
+}
+.info-row:nth-child(1) { animation-delay: 0.7s; border-left-color: #ff6fcf; }
+.info-row:nth-child(2) { animation-delay: 0.85s; border-left-color: #c850c0; }
+.info-row:nth-child(3) { animation-delay: 1s; border-left-color: #7b2fbe; }
+
+@keyframes bounceIn {
+  0%   { opacity:0; transform:translateX(-16px); }
+  60%  { transform:translateX(4px); }
+  100% { opacity:1; transform:translateX(0); }
+}
+
+.info-emoji { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+.info-text-label {
+  font-size: 10px;
+  font-weight: 900;
+  color: #c850c0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.info-text-val {
+  font-size: 15px;
+  font-weight: 900;
+  color: #2d0050;
+  line-height: 1.35;
+}
+.info-text-val em {
+  font-style: normal;
+  color: #7b2fbe;
+}
+
+/* Mensaje especial */
+.msg-box {
+  background: linear-gradient(135deg, #7b2fbe, #c850c0);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  margin: 0 20px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.msg-box::before {
+  content: '⚔️';
+  position: absolute;
+  top: -10px; left: -8px;
+  font-size: 40px;
+  opacity: 0.15;
+  transform: rotate(-20deg);
+}
+.msg-box::after {
+  content: '⚔️';
+  position: absolute;
+  bottom: -10px; right: -8px;
+  font-size: 40px;
+  opacity: 0.15;
+  transform: rotate(20deg) scaleX(-1);
+}
+.msg-stars { font-size: 16px; margin-bottom: 6px; }
+.msg-text {
+  font-family: 'Fredoka One', cursive;
+  font-size: 16px;
+  color: #fff;
+  line-height: 1.4;
+  position: relative;
+  z-index: 1;
+}
+.msg-text span { color: #f5c518; }
+
+/* Footer tarjeta */
+.card-footer {
+  background: linear-gradient(90deg, #ff6fcf, #c850c0, #7b2fbe);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cf-text {
+  font-size: 11px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.cf-hearts { font-size: 18px; }
+
+/* Botón cerrar */
+.btn-close {
+  display: block;
+  width: calc(100% - 40px);
+  margin: 0 auto 14px;
+  padding: 10px;
+  background: transparent;
+  border: 2px solid #c850c0;
+  border-radius: 30px;
+  color: #c850c0;
+  font-family: 'Fredoka One', cursive;
+  font-size: 14px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.btn-close:hover { background: #c850c0; color: #fff; }
+
+/* open state envelope flap */
+.flap-open { transform: rotateX(-160deg) !important; }
+</style>
+
+<div class="bg-particles" id="bgp"></div>
+
+<div style="display:flex;flex-direction:column;align-items:center;padding:20px 0 30px;position:relative;z-index:10;">
+
+  <!-- SOBRE -->
+  <div class="scene" id="scene" onclick="openCard()">
+    <div class="envelope">
+      <div class="env-flap" id="flap">✦</div>
+      <div class="env-corner left"></div>
+      <div class="env-corner right"></div>
+      <div class="env-body">
+        <div class="env-shine"></div>
+        <div class="env-star-deco">🌸</div>
+        <div class="env-label">UNA SORPRESA PARA TI</div>
+        <div class="env-tap">✦ Toca para abrir ✦</div>
+        <div class="env-ribbon">
+          <span class="env-heart">💜</span>
+          <span class="env-heart">✨</span>
+          <span class="env-heart">💜</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARJETA -->
+  <div class="card-wrap" id="cardWrap">
+    <div class="card">
+
+      <!-- TOP -->
+      <div class="card-top">
+        <div class="ct-sparkles" id="sparks"></div>
+
+        <!-- FOTO -->
+        <div class="photo-frame">
+          <div class="photo-inner" id="photoInner">
+          
+          </div>
+          <div class="age-badge">9</div>
+        </div>
+
+        <div class="card-name">¡SOFÍA!</div>
+        <div class="card-subtitle">★ Cumple 9 añitos ★</div>
+
+        <div class="tags">
+          <span class="tag">⚔️ K-WARRIOR</span>
+          <span class="tag">🌸 K-POP STAR</span>
+          <span class="tag">✨ BIRTHDAY GIRL</span>
+        </div>
+      </div>
+
+      <!-- ola -->
+      <div class="wave-sep">
+        <svg viewBox="0 0 320 28" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="28" width="320">
+          <path d="M0,14 C60,28 120,0 180,14 C240,28 280,4 320,14 L320,0 L0,0 Z" fill="url(#wg)"/>
+          <defs>
+            <linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ff6fcf"/>
+              <stop offset="50%" stop-color="#c850c0"/>
+              <stop offset="100%" stop-color="#7b2fbe"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <!-- INFO -->
+      <div class="card-info">
+        <div class="info-row">
+          <div class="info-emoji">🗓️</div>
+          <div>
+            <div class="info-text-label">Fecha</div>
+            <div class="info-text-val">Jueves <em>1 de Mayo</em> · 2025</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-emoji">⏰</div>
+          <div>
+            <div class="info-text-label">Horario</div>
+            <div class="info-text-val"><em>14:30</em> hasta las <em>19:00 hrs</em></div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-emoji">📍</div>
+          <div>
+            <div class="info-text-label">Lugar</div>
+            <div class="info-text-val">B° Simón Bolívar<br><em>Av. Simón Bolívar</em>, frente al galpón</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MENSAJE -->
+      <div class="msg-box">
+        <div class="msg-stars">🌸 ⚔️ 🌸</div>
+        <div class="msg-text">
+          ¡Únete a la batalla más <span>kawaii</span> del año!<br>
+          La guerrera K-pop más poderosa<br>cumple <span>9 años</span> ✨
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="card-footer">
+        <div class="cf-text">Te esperamos 🎉</div>
+        <div class="cf-hearts">💜🌸💛</div>
+      </div>
+
+      <button class="btn-close" onclick="closeCard()">✦ Cerrar tarjeta ✦</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let isOpen = false;
+
+const sparksData = ['✦','🌸','⭐','💫','✨','🌟','💜','💛'];
+const sparksEl = document.getElementById('sparks');
+for (let i = 0; i < 14; i++) {
+  const s = document.createElement('div');
+  s.className = 'sp';
+  s.textContent = sparksData[i % sparksData.length];
+  s.style.cssText = `
+    left:${Math.random()*90}%;
+    top:${Math.random()*90}%;
+    animation-delay:${Math.random()*3}s;
+    animation-duration:${2+Math.random()*2}s;
+    font-size:${10+Math.random()*12}px;
+  `;
+  sparksEl.appendChild(s);
+}
+
+// Partículas fondo
+const bgp = document.getElementById('bgp');
+const pcols = ['#ff6fcf','#c850c0','#f5c518','#7b2fbe','#fff'];
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div');
+  p.className = 'bp';
+  const sz = 4 + Math.random() * 8;
+  p.style.cssText = `
+    width:${sz}px; height:${sz}px;
+    left:${Math.random()*100}%;
+    bottom:${Math.random()*20}%;
+    background:${pcols[Math.floor(Math.random()*pcols.length)]};
+    animation-delay:${Math.random()*6}s;
+    animation-duration:${5+Math.random()*5}s;
+    opacity:0;
+  `;
+  bgp.appendChild(p);
+}
+
+function openCard() {
+  if (isOpen) return;
+  isOpen = true;
+  document.getElementById('flap').classList.add('flap-open');
+  setTimeout(() => {
+    document.getElementById('cardWrap').classList.add('open');
+  }, 400);
+}
+
+function closeCard() {
+  isOpen = false;
+  document.getElementById('cardWrap').classList.remove('open');
+  setTimeout(() => {
+    document.getElementById('flap').classList.remove('flap-open');
+  }, 500);
+}
+
+// Tap hint bounce
+const scene = document.getElementById('scene');
+scene.addEventListener('mouseenter', () => {
+  scene.style.transform = 'scale(1.02)';
+  scene.style.transition = 'transform 0.2s';
+});
+scene.addEventListener('mouseleave', () => {
+  scene.style.transform = 'scale(1)';
+});
+</script>
