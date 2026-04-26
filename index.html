@@ -196,11 +196,12 @@ body{
 
 /* FOTO */
 .photo-frame{
-  width:clamp(280px,216vw,140px);height:clamp(280px,216vw,140px);
+  width:clamp(200px,180vw,140px);height:clamp(200px,180vw,140px);
   border-radius:50%;
   background:linear-gradient(135deg,#f5c518,#ff6fcf,#c850c0);
   padding:4px;margin:0 auto clamp(8px,1.5vh,16px);
   position:relative;animation:glowFrame 2s ease-in-out infinite alternate;
+  cursor:zoom-in;
 }
 @keyframes glowFrame{
   from{box-shadow:0 0 16px rgba(245,197,24,0.5);}
@@ -220,6 +221,13 @@ body{
   background-size:cover;background-position:center;
   /* fondo de respaldo si no hay foto */
   background-color:#c850c0;
+  transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+  transform:scale(1);
+  will-change:transform;
+}
+/* Al pasar el cursor por encima del marco → zoom en la imagen */
+.photo-frame:hover .photo-inner{
+  transform:scale(1.18);
 }
 .age-badge{
   position:absolute;bottom:2px;right:2px;
@@ -400,21 +408,21 @@ body{
             <div class="info-emoji">🗓️</div>
             <div>
               <div class="info-text-label">Fecha</div>
-              <div class="info-text-val">Jueves <em>1 de Mayo</em> · 2025</div>
+              <div class="info-text-val">Jueves <em>1 de Mayo</em> · 2026</div>
             </div>
           </div>
           <div class="info-row">
             <div class="info-emoji">⏰</div>
             <div>
               <div class="info-text-label">Horario</div>
-              <div class="info-text-val"><em>14:30</em> hasta las <em>19:00 hrs</em></div>
+              <div class="info-text-val"><em>12:00</em> hasta las <em>15:00 hrs</em></div>
             </div>
           </div>
           <div class="info-row">
             <div class="info-emoji">📍</div>
             <div>
               <div class="info-text-label">Lugar</div>
-              <div class="info-text-val">B° Simón Bolívar · <em>Av. Simón Bolívar</em>, frente al galpón</div>
+              <div class="info-text-val">B° Simón Bolívar · <em>Av. Simón Bolívar</em>, frente al galpón naranja</div>
             </div>
           </div>
         </div>
