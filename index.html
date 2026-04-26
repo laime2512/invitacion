@@ -2,19 +2,29 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes"/>
 <title>🌸 Cumpleaños Sofía 🌸</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka+One&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100%;overflow:hidden;}
-body{
+
+/* 
+  🔧 CAMBIO CLAVE: 
+  El body y html ahora permiten scroll vertical natural.
+  Se eliminó "overflow:hidden" y se reemplazó por "overflow-y:auto".
+  La altura se ajusta automáticamente al contenido.
+*/
+html,body{
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
   background:linear-gradient(135deg,#1a0030 0%,#2d0050 50%,#1a0030 100%);
-  display:flex;align-items:center;justify-content:center;
   font-family:'Nunito',sans-serif;
+  position:relative;
 }
 
-/* PARTÍCULAS FONDO */
+/* PARTÍCULAS FONDO (fijas respecto al viewport, no interfieren con scroll) */
 .bg-particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
 .bp{position:absolute;border-radius:50%;animation:risep 5s infinite ease-in;opacity:0;}
 @keyframes risep{
@@ -23,16 +33,21 @@ body{
   100%{opacity:0;transform:translateY(-110vh) scale(1.4);}
 }
 
-/* CONTENEDOR PRINCIPAL */
+/* CONTENEDOR PRINCIPAL: flujo normal, sin altura fija, ajustable al contenido */
 .main-wrap{
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  position:relative;z-index:10;
-  width:95vw;height:95vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  z-index:10;
+  width:100%;
+  min-height:100vh;      /* Ocupa al menos toda la pantalla pero se expande si es necesario */
+  padding: 24px 16px;    /* Espacio alrededor para que no toque los bordes */
 }
 
 /* ═══════════════ SOBRE ═══════════════ */
-.scene{width:clamp(220px,55vw,340px);cursor:pointer;position:relative;}
+.scene{width:clamp(220px,55vw,340px);cursor:pointer;position:relative;margin:32px auto;}
 .envelope{width:100%;aspect-ratio:1.6/1;position:relative;transition:transform 0.3s ease;}
 .scene:hover .envelope{transform:scale(1.03) translateY(-4px);}
 
@@ -108,9 +123,11 @@ body{
   100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r)) scale(0.3);opacity:0;}
 }
 
-/* ═══════════════ TARJETA ═══════════════ */
+/* ═══════════════ TARJETA (ahora tiene altura automática y scroll natural) ═══════════════ */
 .card-outer{
-  width:95vw;height:95vh;
+  width:100%;
+  max-width: 580px;      /* Limita el ancho en pantallas grandes, se ve mejor */
+  margin: 0 auto;        /* Centrado */
   border-radius:clamp(16px,3vw,28px);
   padding:3px;
   background:linear-gradient(135deg,#f5c518,#ff6fcf,#c850c0,#7b2fbe,#f5c518);
@@ -125,31 +142,37 @@ body{
   100%{background-position:0% 50%;}
 }
 .card-outer.card-show{
-  display:flex;
+  display:block;   /* cambio de flex a block para que el scroll interno no se rompa */
   animation:cardEntrance 0.8s cubic-bezier(.34,1.56,.64,1) forwards;
 }
 @keyframes cardEntrance{
   0%{opacity:0;transform:scale(0.5) translateY(60px);}
-  60%{opacity:1;transform:scale(1.04) translateY(-8px);}
+  60%{opacity:1;transform:scale(1.02) translateY(-4px);}
   100%{opacity:1;transform:scale(1) translateY(0);}
 }
 .card-inner-border{
   width:100%;
   border-radius:clamp(14px,2.8vw,26px);
-  overflow:hidden;display:flex;flex-direction:column;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  background:#fff;
 }
 .card{
-  width:100%;height:100%;background:#fff;
+  width:100%;
+  background:#fff;
   border-radius:clamp(12px,2.5vw,24px);
-  overflow:hidden;display:flex;flex-direction:column;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
 }
 
 /* TOP */
 .card-top{
   background:linear-gradient(135deg, rgba(255,111,207,0.6) 0%, rgba(200,80,192,0.6) 40%, rgba(123,47,190,0.6) 100%),
-    url('./images/walpaper.png');
-  background-size: cover;
-  background-position: center;
+    url('./images/walpaper.png'); /* patrón sutil */
+  background-repeat: no-repeat;
+  background-size: 100%;
   padding:clamp(14px,2.5vh,28px) clamp(12px,3vw,28px) clamp(12px,2vh,22px);
   text-align:center;position:relative;overflow:hidden;flex-shrink:0;
 }
@@ -194,13 +217,16 @@ body{
   50%{transform:translateY(-6px) rotate(5deg);}
 }
 
-/* FOTO */
+/* FOTO + ZOOM (contenido dentro del círculo) */
 .photo-frame{
-  width:clamp(200px,180vw,140px);height:clamp(200px,180vw,140px);
+  width:clamp(140px, 55vw, 190px);
+  height:clamp(140px, 55vw, 190px);
   border-radius:50%;
-  background:linear-gradient(135deg,#f5c518,#ff6fcf,#c850c0);
-  padding:4px;margin:0 auto clamp(8px,1.5vh,16px);
-  position:relative;animation:glowFrame 2s ease-in-out infinite alternate;
+  background:transparent;
+  padding:4px;
+  margin:0 auto clamp(8px,1.5vh,16px);
+  position:relative;
+  animation:glowFrame 2s ease-in-out infinite alternate;
   cursor:zoom-in;
 }
 @keyframes glowFrame{
@@ -214,94 +240,104 @@ body{
 }
 @keyframes spinRing{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 
+.photo-mask{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  overflow:hidden;
+  background:linear-gradient(135deg,#f5c518,#ff6fcf,#c850c0);
+}
+
 .photo-inner{
-  width:100%;height:100%;border-radius:50%;
-  /* ── REEMPLAZA esta ruta con la foto real ── */
+  width:100%;height:100%;
+  border-radius:50%;
   background-image:url('./images/foto.png');
-  background-size:cover;background-position:center;
-  /* fondo de respaldo si no hay foto */
+  background-size:cover;
+  background-position:center;
   background-color:#c850c0;
   transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
   transform:scale(1);
   will-change:transform;
 }
-/* Al pasar el cursor por encima del marco → zoom en la imagen */
+
 .photo-frame:hover .photo-inner{
   transform:scale(1.18);
 }
+
 .age-badge{
-  position:absolute;bottom:2px;right:2px;
-  width:clamp(24px,5vw,38px);height:clamp(24px,5vw,38px);
+  position:absolute;bottom:8px;right:8px;
+  width:clamp(30px, 8vw, 44px);
+  height:clamp(30px, 8vw, 44px);
   background:#f5c518;border:3px solid #fff;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Fredoka One',cursive;font-size:clamp(12px,2.5vw,17px);
+  font-family:'Fredoka One',cursive;font-size:clamp(14px, 4vw, 22px);
   color:#7b2fbe;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:2;
 }
 
 .card-name{
   font-family:'Fredoka One',cursive;
-  font-size:clamp(28px,8vw,60px);color:#fff;
+  font-size:clamp(32px,8vw,70px);color:#fff;
   text-shadow:0 2px 12px rgba(120,0,200,0.5),0 0 30px rgba(255,255,255,0.3);
   line-height:1;margin-bottom:clamp(3px,0.5vh,8px);
 }
 .card-subtitle{
-  font-size:clamp(9px,2vw,14px);color:rgba(255,255,255,0.9);
+  font-size:clamp(11px,2.2vw,16px);color:rgba(255,255,255,0.9);
   letter-spacing:3px;font-weight:700;text-transform:uppercase;
   margin-bottom:clamp(8px,1.5vh,16px);
 }
 .tags{display:flex;justify-content:center;gap:clamp(4px,1vw,8px);flex-wrap:wrap;}
 .tag{
   background:rgba(255,255,255,0.22);color:#fff;
-  font-size:clamp(8px,1.6vw,11px);font-weight:700;
+  font-size:clamp(9px,1.8vw,12px);font-weight:700;
   padding:clamp(3px,0.6vh,6px) clamp(8px,2vw,14px);
   border-radius:20px;border:1px solid rgba(255,255,255,0.45);letter-spacing:1px;
 }
 
 /* ONDA DIVISORA */
-.divider{position:relative;height:clamp(18px,3vh,30px);overflow:hidden;background:#fff;flex-shrink:0;}
+.divider{position:relative;height:clamp(24px,4vh,38px);overflow:hidden;background:#fff;flex-shrink:0; width:100%;}
 .divider svg{display:block;width:100%;height:100%;}
 
 /* LÍNEAS DECORATIVAS */
 .deco-lines{
   display:flex;align-items:center;gap:8px;
-  padding:clamp(6px,1vh,12px) clamp(12px,3vw,24px) clamp(4px,0.6vh,8px);
+  padding:clamp(10px,1.5vh,16px) clamp(12px,3vw,24px) clamp(6px,0.8vh,10px);
   background:#fff;flex-shrink:0;
 }
 .deco-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,#c850c0,transparent);}
-.deco-diamond{width:7px;height:7px;background:#f5c518;transform:rotate(45deg);flex-shrink:0;box-shadow:0 0 6px rgba(245,197,24,0.8);}
-.deco-text{font-size:clamp(7px,1.5vw,10px);letter-spacing:2px;color:#c850c0;font-weight:900;text-transform:uppercase;flex-shrink:0;}
+.deco-diamond{width:8px;height:8px;background:#f5c518;transform:rotate(45deg);flex-shrink:0;box-shadow:0 0 6px rgba(245,197,24,0.8);}
+.deco-text{font-size:clamp(8px,1.8vw,12px);letter-spacing:2px;color:#c850c0;font-weight:900;text-transform:uppercase;flex-shrink:0;}
 
-/* FILAS DE INFORMACIÓN */
+/* INFO ROWS */
 .card-info{
   background:#fff;
   padding:clamp(6px,1.2vh,14px) clamp(12px,3vw,22px);
-  display:flex;flex-direction:column;gap:clamp(6px,1.2vh,12px);
+  display:flex;flex-direction:column;gap:clamp(8px,1.5vh,14px);
 }
 .info-row{
-  display:flex;align-items:center;gap:clamp(10px,2vw,18px);
-  padding:clamp(10px,1.8vh,16px) clamp(12px,2.5vw,18px);
+  display:flex;align-items:center;gap:clamp(12px,2.5vw,22px);
+  padding:clamp(12px,2vh,18px) clamp(14px,2.5vw,20px);
   background:linear-gradient(135deg,#fdf0ff,#fff0f8);
-  border-radius:clamp(10px,2vw,16px);
+  border-radius:clamp(12px,2.2vw,20px);
   border-left:4px solid #c850c0;
   position:relative;overflow:hidden;
 }
 .info-row:nth-child(1){border-left-color:#ff6fcf;}
 .info-row:nth-child(2){border-left-color:#c850c0;}
 .info-row:nth-child(3){border-left-color:#7b2fbe;}
-.info-emoji{font-size:clamp(20px,4vw,30px);flex-shrink:0;}
-.info-text-label{font-size:clamp(8px,1.5vw,11px);font-weight:900;color:#c850c0;letter-spacing:2px;text-transform:uppercase;margin-bottom:clamp(2px,0.3vh,4px);}
-.info-text-val{font-size:clamp(13px,2.5vw,17px);font-weight:900;color:#2d0050;line-height:1.3;}
+.info-emoji{font-size:clamp(24px,5vw,34px);flex-shrink:0;}
+.info-text-label{font-size:clamp(9px,1.8vw,12px);font-weight:900;color:#c850c0;letter-spacing:2px;text-transform:uppercase;margin-bottom:clamp(2px,0.3vh,4px);}
+.info-text-val{font-size:clamp(14px,2.8vw,18px);font-weight:900;color:#2d0050;line-height:1.3;}
 .info-text-val em{font-style:normal;color:#7b2fbe;}
 
 /* MENSAJE */
 .msg-box{
   background:linear-gradient(135deg,#7b2fbe,#c850c0);
-  border-radius:clamp(12px,2.5vw,18px);
-  padding:clamp(12px,2vh,20px) clamp(14px,3vw,24px);
+  border-radius:clamp(14px,2.5vw,22px);
+  padding:clamp(16px,2.5vh,24px) clamp(16px,3.5vw,28px);
   text-align:center;
-  margin:0 clamp(12px,3vw,22px) clamp(8px,1.5vh,16px);
+  margin:clamp(8px,1.5vh,16px) clamp(14px,3.5vw,26px) clamp(10px,2vh,20px);
   position:relative;overflow:hidden;
-  box-shadow:0 4px 16px rgba(123,47,190,0.4);
+  box-shadow:0 4px 20px rgba(123,47,190,0.5);
   flex-shrink:0;
 }
 .msg-box::before{
@@ -309,24 +345,38 @@ body{
   background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);
   animation:lineSweep 2s linear infinite;
 }
-.msg-stars{font-size:clamp(14px,3vw,22px);margin-bottom:clamp(4px,0.8vh,10px);}
-.msg-text{font-family:'Fredoka One',cursive;font-size:clamp(14px,3vw,20px);color:#fff;line-height:1.5;position:relative;z-index:1;}
+.msg-stars{font-size:clamp(18px,3.5vw,26px);margin-bottom:clamp(6px,1vh,12px);}
+.msg-text{font-family:'Fredoka One',cursive;font-size:clamp(16px,3.5vw,22px);color:#fff;line-height:1.5;position:relative;z-index:1;}
 .msg-text span{color:#f5c518;}
 
 /* FOOTER */
 .card-footer{
   background:linear-gradient(90deg,#ff6fcf,#c850c0,#7b2fbe);
-  padding:clamp(10px,1.8vh,18px) clamp(14px,3vw,26px);
+  padding:clamp(14px,2.2vh,22px) clamp(16px,3.5vw,28px);
   display:flex;align-items:center;justify-content:space-between;
   position:relative;overflow:hidden;flex-shrink:0;
+  margin-top: auto;
 }
 .card-footer::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,#f5c518,#fff,#f5c518);
   background-size:200%;animation:lineSweep 2s linear infinite;
 }
-.cf-text{font-size:clamp(10px,2vw,14px);font-weight:900;color:rgba(255,255,255,0.95);letter-spacing:1.5px;text-transform:uppercase;}
-.cf-hearts{font-size:clamp(16px,3.5vw,24px);}
+.cf-text{font-size:clamp(12px,2.2vw,16px);font-weight:900;color:rgba(255,255,255,0.95);letter-spacing:1.5px;text-transform:uppercase;}
+.cf-hearts{font-size:clamp(20px,4vw,30px);}
+
+/* MEJORAS PARA MÓVIL: suficiente espacio */
+@media (max-width: 550px) {
+  .main-wrap {
+    padding: 32px 12px 48px 12px;
+  }
+  .info-emoji {
+    font-size: 28px;
+  }
+  .msg-text {
+    font-size: 16px;
+  }
+}
 </style>
 </head>
 <body>
@@ -355,7 +405,7 @@ body{
     </div>
   </div>
 
-  <!-- TARJETA -->
+  <!-- TARJETA: scroll vertical natural, sin limitación de altura, sin overflow hidden -->
   <div class="card-outer" id="cardOuter">
     <div class="card-inner-border">
       <div class="card">
@@ -370,9 +420,12 @@ body{
           <div class="corner-sticker br">💜</div>
 
           <div class="photo-frame">
-            <div class="photo-inner"></div>
+            <div class="photo-mask">
+              <div class="photo-inner"></div>
+            </div>
             <div class="age-badge">9</div>
           </div>
+
           <div class="card-name">¡SOFÍA!</div>
           <div class="card-subtitle">★ Cumple 9 añitos ★</div>
           <div class="tags">
@@ -471,10 +524,11 @@ function abrirSobre() {
   setTimeout(() => lanzarConfetti(), 400);
   setTimeout(() => { envelope.classList.add('envelope-exit'); }, 500);
   setTimeout(() => {
-    scene.style.transition = 'max-height 0.5s ease, opacity 0.4s ease';
+    scene.style.transition = 'all 0.5s ease';
     scene.style.maxHeight  = '0';
     scene.style.opacity    = '0';
     scene.style.overflow   = 'hidden';
+    scene.style.margin     = '0';
     scene.style.pointerEvents = 'none';
   }, 950);
   setTimeout(() => { cardOuter.classList.add('card-show'); }, 1100);
@@ -507,33 +561,33 @@ function lanzarConfetti() {
 /* Sparkles en el top de la tarjeta */
 const sparksData = ['✦','🌸','⭐','💫','✨','🌟','💜','💛'];
 const sparksEl   = document.getElementById('sparks');
-for (let i = 0; i < 16; i++) {
+for (let i = 0; i < 22; i++) {
   const s = document.createElement('div');
   s.className = 'sp';
   s.textContent = sparksData[i % sparksData.length];
   s.style.cssText = `
-    left:${Math.random()*90}%;top:${Math.random()*90}%;
+    left:${Math.random()*90}%;top:${Math.random()*85}%;
     animation-delay:${Math.random()*3}s;
     animation-duration:${2+Math.random()*2}s;
-    font-size:${10+Math.random()*14}px;
+    font-size:${12+Math.random()*18}px;
   `;
   sparksEl.appendChild(s);
 }
 
-/* Partículas de fondo */
+/* Partículas de fondo dinámicas */
 const bgp   = document.getElementById('bgp');
 const pcols = ['#ff6fcf','#c850c0','#f5c518','#7b2fbe','#fff'];
-for (let i = 0; i < 30; i++) {
+for (let i = 0; i < 45; i++) {
   const p  = document.createElement('div');
   p.className = 'bp';
-  const sz = 4 + Math.random() * 8;
+  const sz = 5 + Math.random() * 12;
   p.style.cssText = `
     width:${sz}px;height:${sz}px;
     left:${Math.random()*100}%;
-    bottom:${Math.random()*20}%;
+    bottom:${Math.random()*30}%;
     background:${pcols[Math.floor(Math.random()*pcols.length)]};
     animation-delay:${Math.random()*6}s;
-    animation-duration:${5+Math.random()*5}s;
+    animation-duration:${4+Math.random()*7}s;
     opacity:0;
   `;
   bgp.appendChild(p);
